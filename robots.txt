@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://scedev.com/sitemap.xml
+
+# Google bot
+User-agent: Googlebot
+Allow: /
+
+# Bing bot
+User-agent: Bingbot
+Allow: /

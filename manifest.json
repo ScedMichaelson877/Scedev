@@ -1,0 +1,41 @@
+{
+  "name": "Sced Developer Team",
+  "short_name": "SceDev",
+  "description": "SceBrawl oyunu ve geliştirici topluluğu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#00ff88",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment", "social"],
+  "shortcuts": [
+    {
+      "name": "Oyunu İndir",
+      "short_name": "İndir",
+      "description": "SceBrawl oyununu indir",
+      "url": "/#oyun",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Topluluk",
+      "short_name": "Topluluk",
+      "description": "Topluluğa katıl",
+      "url": "/#topluluk",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

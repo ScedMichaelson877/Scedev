@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Sced Developer Team | Scedev & Nulls Team</title>
+    <meta name="description" content="Sced Developer Team - SceBrawl oyununu indir, geliştirici topluluğuna katıl. Modern oyun geliştirme platformu. APK ve IPA indirme seçenekleri.">
+    <meta name="keywords" content="scedev, sced developer team, scebrawl, oyun indir, game download, developer team, gaming community, apk indir, ipa indir, mobile game">
+    <meta name="author" content="Sced Developer Team">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://scedev.com">
+    
+    <!-- Mobile Optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SceDev">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="msapplication-TileColor" content="#0a0a0f">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://scedev.com">
+    <meta property="og:title" content="Sced Developer Team | SceBrawl Oyunu">
+    <meta property="og:description" content="SceBrawl oyununu indir ve geliştirici topluluğuna katıl. Modern oyun geliştirme platformu.">
+    <meta property="og:image" content="https://scedev.com/og-image.jpg">
+    <meta property="og:site_name" content="Sced Developer Team">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://scedev.com">
+    <meta property="twitter:title" content="Sced Developer Team | SceBrawl Oyunu">
+    <meta property="twitter:description" content="SceBrawl oyununu indir ve geliştirici topluluğuna katıl.">
+    <meta property="twitter:image" content="https://scedev.com/og-image.jpg">
+    
+    <!-- Favicon & PWA -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Schema.org markup for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Sced Developer Team",
+      "alternateName": "SceDev",
+      "url": "https://scedev.com",
+      "logo": "https://scedev.com/logo.png",
+      "description": "En Yakın zamanda sizlerle!",
+      "sameAs": [
+        "https://github.com/scedev",
+        "https://instagram.com/scedev",
+        "https://t.me/scedev"
+      ]
+    }
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1><span style="color:#ff1900">S</span><span style="color:#ff3200">c</span><span style="color:#ff4c00">e</span><span style="color:#ff6500">d</span><span style="color:#ff7f00"> </span><span style="color:#ff9800">D</span><span style="color:#ffb200">e</span><span style="color:#fecb00">v</span><span style="color:#ffe500">e</span><span style="color:#fffe00">l</span><span style="color:#ffff00">o</span><span style="color:#e5ff00">p</span><span style="color:#ccff00">e</span><span style="color:#b2ff00">r</span><span style="color:#99ff00"> </span><span style="color:#7fff00">T</span><span style="color:#66ff00">e</span><span style="color:#4cff00">a</span><span style="color:#33ff00">m</span></h1>
+            </div>
+            <nav>
+                <a href="#ana"><i class="fas fa-home"></i> <span data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</span></a>
+                <a href="#oyun"><i class="fas fa-gamepad"></i> <span data-tr="Oyun İndir" data-en="Download Game">Oyun İndir</span></a>
+                <a href="#topluluk"><i class="fas fa-users"></i> <span data-tr="Topluluk" data-en="Community">Topluluk</span></a>
+            </nav>
+            <div class="social-links">
+                <a href="https://github.com" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://telegram.org" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
+                <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+            <div class="language-selector">
+                <button class="lang-btn" onclick="changeLanguage('tr')" id="langTr">
+                    <img src="https://flagcdn.com/w40/tr.png" alt="Türkçe"> TR
+                </button>
+                <button class="lang-btn" onclick="changeLanguage('en')" id="langEn">
+                    <img src="https://flagcdn.com/w40/gb.png" alt="English"> EN
+                </button>
+            </div>
+            <div class="user-section">
+                <button class="btn btn-login" id="loginBtn" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> <span data-tr="Giriş Yap" data-en="Login">Giriş Yap</span>
+                </button>
+                <div class="user-profile-header" id="userProfileHeader" style="display: none;">
+                    <img id="headerAvatar" src="" alt="Profil" class="header-avatar">
+                    <span id="headerUsername"></span>
+                    <button class="btn-icon" onclick="openProfileModal()" title="Profil Ayarları">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="btn-icon" onclick="logout()" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Liquid Background Canvas -->
+    <canvas id="liquidCanvas"></canvas>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content liquid-card">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2><i class="fas fa-user-circle"></i> <span data-tr="Giriş Yap / Kayıt Ol" data-en="Login / Register">Giriş Yap / Kayıt Ol</span></h2>
+            <div class="login-form">
+                <!-- Google Login Button -->
+                <button class="btn google-login-btn" onclick="loginWithGoogle()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10.2V12.05H15.5818C15.3545 13.3 14.6182 14.3591 13.5091 15.0682V17.5773H16.7909C18.7727 15.7364 19.8 13.2273 19.8 10.2273Z" fill="#4285F4"/>
+                        <path d="M10.2 20C12.9 20 15.1727 19.1045 16.7909 17.5773L13.5091 15.0682C12.5909 15.6682 11.4273 16.0227 10.2 16.0227C7.59545 16.0227 5.38182 14.1636 4.56364 11.7273H1.17273V14.3182C2.78182 17.5182 6.22727 20 10.2 20Z" fill="#34A853"/>
+                        <path d="M4.56364 11.7273C4.36364 11.1273 4.25 10.4864 4.25 9.82727C4.25 9.16818 4.36364 8.52727 4.56364 7.92727V5.33636H1.17273C0.427273 6.81818 0 8.47727 0 10.2C0 11.9227 0.427273 13.5818 1.17273 15.0636L4.56364 11.7273Z" fill="#FBBC05"/>
+                        <path d="M10.2 3.97727C11.5545 3.97727 12.7545 4.43182 13.7 5.32727L16.6091 2.41818C15.1727 1.09091 12.9 0 10.2 0C6.22727 0 2.78182 2.48182 1.17273 5.68182L4.56364 8.27273C5.38182 5.83636 7.59545 3.97727 10.2 3.97727Z" fill="#EA4335"/>
+                    </svg>
+                    <span data-tr="Google ile Giriş Yap" data-en="Sign in with Google">Google ile Giriş Yap</span>
+                </button>
+                
+                <div class="divider">
+                    <span data-tr="veya" data-en="or">veya</span>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('login')">
+                        <span data-tr="Giriş Yap" data-en="Login">Giriş Yap</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('register')">
+                        <span data-tr="Kayıt Ol" data-en="Register">Kayıt Ol</span>
+                    </button>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="loginTabContent" class="tab-content active">
+                    <input type="text" id="loginEmailField" placeholder="E-posta veya Kullanıcı Adı" class="input-field" data-placeholder-tr="E-posta veya Kullanıcı Adı" data-placeholder-en="Email or Username">
+                    <input type="password" id="loginPasswordField" placeholder="Şifre" class="input-field" data-placeholder-tr="Şifre" data-placeholder-en="Password">
+                    <button class="btn btn-primary" onclick="loginWithEmail()">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span data-tr="Giriş Yap" data-en="Login">Giriş Yap</span>
+                    </button>
+                </div>
+                
+                <!-- Register Form -->
+                <div id="registerTabContent" class="tab-content">
+                    <input type="text" id="registerUsername" placeholder="Kullanıcı Adı" class="input-field" data-placeholder-tr="Kullanıcı Adı" data-placeholder-en="Username">
+                    <input type="email" id="registerEmail" placeholder="E-posta" class="input-field" data-placeholder-tr="E-posta" data-placeholder-en="Email">
+                    <input type="password" id="registerPassword" placeholder="Şifre" class="input-field" data-placeholder-tr="Şifre" data-placeholder-en="Password">
+                    <input type="password" id="registerPasswordConfirm" placeholder="Şifre Tekrar" class="input-field" data-placeholder-tr="Şifre Tekrar" data-placeholder-en="Confirm Password">
+                    <button class="btn btn-primary" onclick="registerUser()">
+                        <i class="fas fa-user-plus"></i>
+                        <span data-tr="Kayıt Ol" data-en="Register">Kayıt Ol</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Settings Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content liquid-card">
+            <span class="close" onclick="closeProfileModal()">&times;</span>
+            <h2><i class="fas fa-user-edit"></i> <span data-tr="Profil Ayarları" data-en="Profile Settings">Profil Ayarları</span></h2>
+            <div class="profile-settings">
+                <div class="current-profile">
+                    <div class="profile-avatar-wrapper">
+                        <img id="currentAvatar" src="" alt="Profil">
+                        <label for="profilePhotoUpload" class="upload-photo-btn">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="profilePhotoUpload" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+                    </div>
+                    <h3 id="currentUsername" class="editable-username"></h3>
+                    <div id="userRole" class="user-role-badge"></div>
+                </div>
+                
+                <div class="setting-group">
+                    <label data-tr="Kullanıcı Adı:" data-en="Username:">Kullanıcı Adı:</label>
+                    <input type="text" id="newUsername" placeholder="Kullanıcı adı" class="input-field" data-placeholder-tr="Kullanıcı adı" data-placeholder-en="Username">
+                </div>
+                
+                <div class="setting-group">
+                    <label data-tr="E-posta:" data-en="Email:">E-posta:</label>
+                    <input type="email" id="profileEmail" placeholder="E-posta" class="input-field" data-placeholder-tr="E-posta" data-placeholder-en="Email" disabled>
+                </div>
+                
+                <div class="setting-group">
+                    <label data-tr="İsim Rengi:" data-en="Name Color:">İsim Rengi:</label>
+                    <div class="name-color-options">
+                        <button class="name-color-btn" data-color="white" style="background: #1a1a1a; border-color: #ffffff;" onclick="selectNameColor('white')">
+                            <span style="color: #ffffff;">Beyaz</span>
+                        </button>
+                        <button class="name-color-btn" data-color="blue" style="background: #3b82f6;" onclick="selectNameColor('blue')">
+                            <span style="color: #3b82f6;">Mavi</span>
+                        </button>
+                        <button class="name-color-btn" data-color="red" style="background: #ef4444;" onclick="selectNameColor('red')">
+                            <span style="color: #ef4444;">Kırmızı</span>
+                        </button>
+                    </div>
+                    <p class="help-text" data-tr="Adminler gökkuşağı rengine sahiptir" data-en="Admins have rainbow color">Adminler gökkuşağı rengine sahiptir</p>
+                </div>
+                
+                <div class="setting-group">
+                    <label>Bio:</label>
+                    <textarea id="userBio" placeholder="Kendin hakkında birkaç şey yaz..." class="textarea-field" style="min-height: 100px;" data-placeholder-tr="Kendin hakkında birkaç şey yaz..." data-placeholder-en="Write something about yourself..."></textarea>
+                </div>
+                
+                <div class="setting-group">
+                    <label data-tr="Profil Fotoğrafı:" data-en="Profile Photo:">Profil Fotoğrafı:</label>
+                    <div class="avatar-grid" id="profileAvatarGrid"></div>
+                </div>
+                
+                <div class="theme-selector">
+                    <label data-tr="Tema Rengi:" data-en="Theme Color:">Tema Rengi:</label>
+                    <div class="color-options">
+                        <button class="color-btn" data-color="#6366f1" style="background: #6366f1;"></button>
+                        <button class="color-btn" data-color="#8b5cf6" style="background: #8b5cf6;"></button>
+                        <button class="color-btn" data-color="#3b82f6" style="background: #3b82f6;"></button>
+                        <button class="color-btn" data-color="#ef4444" style="background: #ef4444;"></button>
+                        <button class="color-btn" data-color="#10b981" style="background: #10b981;"></button>
+                    </div>
+                </div>
+                
+                <div class="setting-group password-change">
+                    <label data-tr="Şifre Değiştir:" data-en="Change Password:">Şifre Değiştir:</label>
+                    <input type="password" id="currentPassword" placeholder="Mevcut şifre" class="input-field" data-placeholder-tr="Mevcut şifre" data-placeholder-en="Current password">
+                    <input type="password" id="newPassword" placeholder="Yeni şifre" class="input-field" data-placeholder-tr="Yeni şifre" data-placeholder-en="New password">
+                    <input type="password" id="confirmPassword" placeholder="Yeni şifre tekrar" class="input-field" data-placeholder-tr="Yeni şifre tekrar" data-placeholder-en="Confirm new password">
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveProfile()"><span data-tr="Kaydet" data-en="Save">Kaydet</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana Bölüm -->
+    <section id="ana" class="hero">
+        <div class="hero-content">
+            <h1 class="glitch rainbow-text"><span style="color:#ff1900">S</span><span style="color:#ff3200">c</span><span style="color:#ff4c00">e</span><span style="color:#ff6500">d</span><span style="color:#ff7f00"> </span><span style="color:#ff9800">D</span><span style="color:#ffb200">e</span><span style="color:#fecb00">v</span><span style="color:#ffe500">e</span><span style="color:#fffe00">l</span><span style="color:#ffff00">o</span><span style="color:#e5ff00">p</span><span style="color:#ccff00">e</span><span style="color:#b2ff00">r</span><span style="color:#99ff00"> </span><span style="color:#7fff00">T</span><span style="color:#66ff00">e</span><span style="color:#4cff00">a</span><span style="color:#33ff00">m</span></h1>
+            <p data-tr="Modern Oyun Geliştirme ve Topluluk Platformu | SceBrawl Oyunu" data-en="Modern Game Development and Community Platform | SceBrawl Game">Modern Oyun Geliştirme ve Topluluk Platformu | SceBrawl Oyunu</p>
+            <div class="hero-buttons">
+                <a href="#oyun" class="btn btn-primary" data-tr="Oyunu İndir" data-en="Download Game">Oyunu İndir</a>
+                <a href="#topluluk" class="btn btn-secondary" data-tr="Topluluğa Katıl" data-en="Join Community">Topluluğa Katıl</a>
+            </div>
+        </div>
+        <div class="particles"></div>
+    </section>
+
+    <!-- Oyun İndirme Bölümü -->
+    <section id="oyun" class="game-section">
+        <div class="section-header">
+            <h2><i class="fas fa-download"></i> <span data-tr="SceBrawl Oyunu İndir - APK ve IPA" data-en="Download SceBrawl Game - APK and IPA">SceBrawl Oyunu İndir - APK ve IPA</span></h2>
+            <p data-tr="SceBrawl mobil oyununu ücretsiz indir! Android APK ve iOS IPA sürümleri mevcut. En son sürümü hemen indir ve maceraya başla!" data-en="Download SceBrawl mobile game for free! Android APK and iOS IPA versions available. Download the latest version now and start the adventure!">SceBrawl mobil oyununu ücretsiz indir! Android APK ve iOS IPA sürümleri mevcut. En son sürümü hemen indir ve maceraya başla!</p>
+        </div>
+        <div class="download-container">
+            <div class="download-card">
+                <div class="download-icon">
+                    <i class="fab fa-android"></i>
+                </div>
+                <h3>Android</h3>
+                <p data-tr="APK Dosyası" data-en="APK File">APK Dosyası</p>
+                <button class="download-btn" onclick="downloadGame('android')">
+                    <i class="fas fa-download"></i> <span data-tr="APK İndir" data-en="Download APK">APK İndir</span>
+                </button>
+            </div>
+            <div class="download-card">
+                <div class="download-icon">
+                    <i class="fab fa-apple"></i>
+                </div>
+                <h3>iOS</h3>
+                <p data-tr="IPA Dosyası" data-en="IPA File">IPA Dosyası</p>
+                <button class="download-btn" onclick="downloadGame('ios')">
+                    <i class="fas fa-download"></i> <span data-tr="IPA İndir" data-en="Download IPA">IPA İndir</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topluluk Bölümü -->
+    <section id="topluluk" class="community-section">
+        <div class="section-header">
+            <h2><i class="fas fa-comments"></i> <span data-tr="Topluluk" data-en="Community">Topluluk</span></h2>
+            <p data-tr="Konu aç, sohbet et ve topluluğa katıl!" data-en="Create topics, chat, and join the community!">Konu aç, sohbet et ve topluluğa katıl!</p>
+        </div>
+        
+        <div class="community-container">
+            <!-- Sol Taraf: Konular -->
+            <div class="topics-list">
+                <div class="topics-header">
+                    <h3 data-tr="Aktif Konular" data-en="Active Topics">Aktif Konular</h3>
+                    <button class="btn-new-topic" onclick="toggleTopicForm()">
+                        <i class="fas fa-plus"></i> <span data-tr="Yeni Konu" data-en="New Topic">Yeni Konu</span>
+                    </button>
+                </div>
+                <div id="topicsList" class="topics"></div>
+            </div>
+
+            <!-- Konu Detay Modal -->
+            <div id="topicDetailModal" class="modal" style="display: none;">
+                <div class="modal-content liquid-glass">
+                    <span class="close" onclick="closeTopicDetail()">&times;</span>
+                    <div id="topicDetailContent"></div>
+                </div>
+            </div>
+
+            <!-- Kullanıcı Profil Modal -->
+            <div id="userProfileModal" class="modal" style="display: none;">
+                <div class="modal-content liquid-glass">
+                    <span class="close" onclick="closeUserProfile()">&times;</span>
+                    <div id="userProfileContent"></div>
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Yeni Konu Formu -->
+            <div class="form-container" id="topicForm">
+                <h3><i class="fas fa-edit"></i> <span data-tr="Yeni Konu Aç" data-en="Create New Topic">Yeni Konu Aç</span></h3>
+                <div class="user-profile-mini" id="topicFormProfile">
+                    <img id="topicFormAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="Profil">
+                    <div>
+                        <strong id="topicFormUsername" data-tr="Misafir" data-en="Guest">Misafir</strong>
+                        <p id="loginPrompt" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;" data-tr="Konu açmak için giriş yapın" data-en="Login to create topics">Konu açmak için giriş yapın</p>
+                    </div>
+                </div>
+                <input type="text" id="topicTitle" placeholder="Konu Başlığı" class="input-field" data-placeholder-tr="Konu Başlığı" data-placeholder-en="Topic Title">
+                <textarea id="topicContent" placeholder="Konuyu detaylı anlat..." class="textarea-field" data-placeholder-tr="Konuyu detaylı anlat..." data-placeholder-en="Describe the topic in detail..."></textarea>
+                
+                <div class="form-buttons">
+                    <button class="btn btn-primary" onclick="createTopic()">
+                        <i class="fas fa-paper-plane"></i> <span data-tr="Gönder" data-en="Send">Gönder</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleTopicForm()">
+                        <i class="fas fa-times"></i> <span data-tr="İptal" data-en="Cancel">İptal</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sced Developer Team</h3>
+                <p data-tr="Modern oyun geliştirme ve topluluk platformu" data-en="Modern game development and community platform">Modern oyun geliştirme ve topluluk platformu</p>
+            </div>
+            <div class="footer-section">
+                <h3 data-tr="Bağlantılar" data-en="Links">Bağlantılar</h3>
+                <div class="footer-links">
+                    <a href="#ana" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a>
+                    <a href="#oyun" data-tr="Oyun İndir" data-en="Download Game">Oyun İndir</a>
+                    <a href="#topluluk" data-tr="Topluluk" data-en="Community">Topluluk</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3 data-tr="Sosyal Medya" data-en="Social Media">Sosyal Medya</h3>
+                <div class="footer-social">
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://telegram.org" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p data-tr="© 2025 Sced Developer Team. Tüm hakları saklıdır." data-en="© 2025 Sced Developer Team. All rights reserved.">© 2025 Sced Developer Team. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK (Cihazlar arası senkronizasyon için) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
