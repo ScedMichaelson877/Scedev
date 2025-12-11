@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sced Developer Team</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>Sced Developer Team</h1>
+            </div>
+            <nav>
+                <a href="#ana"><i class="fas fa-home"></i> Ana Sayfa</a>
+                <a href="#oyun"><i class="fas fa-gamepad"></i> Oyun İndir</a>
+                <a href="#topluluk"><i class="fas fa-users"></i> Topluluk</a>
+            </nav>
+            <div class="social-links">
+                <a href="https://github.com" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://telegram.org" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
+                <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+            <div class="user-section">
+                <button class="btn btn-login" id="loginBtn" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                </button>
+                <div class="user-profile-header" id="userProfileHeader" style="display: none;">
+                    <img id="headerAvatar" src="" alt="Profil" class="header-avatar">
+                    <span id="headerUsername"></span>
+                    <button class="btn-icon" onclick="openProfileModal()" title="Profil Ayarları">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="btn-icon" onclick="logout()" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Liquid Background Canvas -->
+    <canvas id="liquidCanvas"></canvas>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content liquid-card">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2><i class="fas fa-user-circle"></i> Giriş Yap / Kayıt Ol</h2>
+            <div class="login-form">
+                <input type="text" id="loginUsername" placeholder="Kullanıcı Adı" class="input-field">
+                <input type="email" id="loginEmail" placeholder="E-posta" class="input-field">
+                <div class="avatar-selector">
+                    <p>Avatar Seç:</p>
+                    <div class="avatar-grid" id="avatarGrid"></div>
+                </div>
+                <button class="btn btn-primary" onclick="login()">Giriş Yap</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Settings Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content liquid-card">
+            <span class="close" onclick="closeProfileModal()">&times;</span>
+            <h2><i class="fas fa-user-edit"></i> Profil Ayarları</h2>
+            <div class="profile-settings">
+                <div class="current-profile">
+                    <img id="currentAvatar" src="" alt="Profil">
+                    <h3 id="currentUsername"></h3>
+                </div>
+                <div class="setting-group">
+                    <label>Yeni Kullanıcı Adı:</label>
+                    <input type="text" id="newUsername" placeholder="Yeni kullanıcı adı" class="input-field">
+                </div>
+                <div class="setting-group">
+                    <label>Yeni Avatar Seç:</label>
+                    <div class="avatar-grid" id="profileAvatarGrid"></div>
+                </div>
+                <div class="setting-group">
+                    <label>Bio:</label>
+                    <textarea id="userBio" placeholder="Kendin hakkında birkaç şey yaz..." class="textarea-field" style="min-height: 100px;"></textarea>
+                </div>
+                <div class="theme-selector">
+                    <label>Tema Rengi:</label>
+                    <div class="color-options">
+                        <button class="color-btn" data-color="#00ff88" style="background: #00ff88;"></button>
+                        <button class="color-btn" data-color="#00d4ff" style="background: #00d4ff;"></button>
+                        <button class="color-btn" data-color="#ff006e" style="background: #ff006e;"></button>
+                        <button class="color-btn" data-color="#ffd700" style="background: #ffd700;"></button>
+                        <button class="color-btn" data-color="#9d4edd" style="background: #9d4edd;"></button>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="saveProfile()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana Bölüm -->
+    <section id="ana" class="hero">
+        <div class="hero-content">
+            <h2 class="glitch" data-text="Sced Developer Team">Sced Developer Team</h2>
+            <p>Modern Oyun Geliştirme ve Topluluk Platformu</p>
+            <div class="hero-buttons">
+                <a href="#oyun" class="btn btn-primary">Oyunu İndir</a>
+                <a href="#topluluk" class="btn btn-secondary">Topluluğa Katıl</a>
+            </div>
+        </div>
+        <div class="particles"></div>
+    </section>
+
+    <!-- Oyun İndirme Bölümü -->
+    <section id="oyun" class="game-section">
+        <div class="section-header">
+            <h2><i class="fas fa-download"></i> SceBrawl - Oyunu İndir</h2>
+            <p>En son sürümü hemen indir ve maceraya başla!</p>
+        </div>
+        <div class="download-container">
+            <div class="download-card">
+                <div class="download-icon">
+                    <i class="fab fa-android"></i>
+                </div>
+                <h3>Android</h3>
+                <p>APK Dosyası</p>
+                <button class="download-btn" onclick="downloadGame('android')">
+                    <i class="fas fa-download"></i> APK İndir
+                </button>
+            </div>
+            <div class="download-card">
+                <div class="download-icon">
+                    <i class="fab fa-apple"></i>
+                </div>
+                <h3>iOS</h3>
+                <p>IPA Dosyası</p>
+                <button class="download-btn" onclick="downloadGame('ios')">
+                    <i class="fas fa-download"></i> IPA İndir
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topluluk Bölümü -->
+    <section id="topluluk" class="community-section">
+        <div class="section-header">
+            <h2><i class="fas fa-comments"></i> Topluluk</h2>
+            <p>Konu aç, sohbet et ve topluluğa katıl!</p>
+        </div>
+        
+        <div class="community-container">
+            <!-- Sol Taraf: Konular -->
+            <div class="topics-list">
+                <div class="topics-header">
+                    <h3>Aktif Konular</h3>
+                    <button class="btn-new-topic" onclick="toggleTopicForm()">
+                        <i class="fas fa-plus"></i> Yeni Konu
+                    </button>
+                </div>
+                <div id="topicsList" class="topics"></div>
+            </div>
+
+            <!-- Sağ Taraf: Yeni Konu Formu -->
+            <div class="form-container" id="topicForm">
+                <h3><i class="fas fa-edit"></i> Yeni Konu Aç</h3>
+                <div class="user-profile-mini" id="topicFormProfile">
+                    <img id="topicFormAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="Profil">
+                    <div>
+                        <strong id="topicFormUsername">Misafir</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">Konu açmak için giriş yapın</p>
+                    </div>
+                </div>
+                <input type="text" id="topicTitle" placeholder="Konu Başlığı" class="input-field">
+                <textarea id="topicContent" placeholder="Konuyu detaylı anlat..." class="textarea-field"></textarea>
+                <div class="form-buttons">
+                    <button class="btn btn-primary" onclick="createTopic()">
+                        <i class="fas fa-paper-plane"></i> Gönder
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleTopicForm()">
+                        <i class="fas fa-times"></i> İptal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sced Developer Team</h3>
+                <p>Modern oyun geliştirme ve topluluk platformu</p>
+            </div>
+            <div class="footer-section">
+                <h3>Bağlantılar</h3>
+                <div class="footer-links">
+                    <a href="#ana">Ana Sayfa</a>
+                    <a href="#oyun">Oyun İndir</a>
+                    <a href="#topluluk">Topluluk</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Sosyal Medya</h3>
+                <div class="footer-social">
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://telegram.org" target="_blank"><i class="fab fa-telegram"></i></a>
+                    <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Sced Developer Team. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
