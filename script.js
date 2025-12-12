@@ -1117,14 +1117,14 @@ function openTopicDetail(topicId) {
                 </h4>
                 
                 ${currentUser ? `
-                <div class="comment-form liquid-glass" onclick="event.stopPropagation()">
+                <div class="comment-form liquid-glass" style="position: relative; z-index: 10;">
                     <textarea 
                         id="newComment" 
                         class="comment-input" 
                         placeholder="${currentLang === 'tr' ? 'Yorumunuzu yazın...' : 'Write your comment...'}"
-                        onclick="event.stopPropagation()"
+                        style="pointer-events: auto; position: relative; z-index: 11;"
                     ></textarea>
-                    <button class="btn btn-primary" onclick="event.stopPropagation(); addComment(${topic.id})">
+                    <button class="btn btn-primary" onclick="addComment(${topic.id})" style="pointer-events: auto;">
                         <i class="fas fa-paper-plane"></i>
                         ${currentLang === 'tr' ? 'Yorum Yap' : 'Post Comment'}
                     </button>
