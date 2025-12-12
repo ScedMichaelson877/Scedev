@@ -636,9 +636,6 @@ function initLiquidCanvas() {
     animate();
 }
 
-// Konular için veri
-const TOPICS_KEY = 'sced_topics';
-
 // Firebase Configuration (Ücretsiz Realtime Database)
 const firebaseConfig = {
     apiKey: "AIzaSyC2RjyBkLTNFq37_9rAp3svz9OBOt4Ckks",
