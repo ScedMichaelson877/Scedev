@@ -110,7 +110,6 @@ function initializeAdminAccount() {
     
     localStorage.setItem('sced_users', JSON.stringify(users));
 }
-}
 
 // Sayfa yüklendiğinde kullanıcıyı kontrol et
 window.addEventListener('DOMContentLoaded', function() {
