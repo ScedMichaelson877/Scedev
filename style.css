@@ -1721,3 +1721,198 @@ footer {
         font-size: 16px;
     }
 }
+
+/* ============ KULÜPLER ============ */
+.clubs-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.clubs-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: inherit;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.clubs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.club-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid var(--border-color);
+}
+
+.club-card:hover {
+    border-color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.club-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.club-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.club-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    background: var(--primary-color);
+    color: white;
+}
+
+.club-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.club-stats {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.club-stats i {
+    margin-right: 0.25rem;
+}
+
+.club-detail-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    min-height: 500px;
+}
+
+.club-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.club-detail-header h2 {
+    font-size: 2rem;
+}
+
+.club-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.stat-card i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.club-members h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.member-card {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.member-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+}
+
+.member-card img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+    border: 2px solid var(--primary-color);
+}
+
+.member-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.member-role {
+    font-size: 0.75rem;
+    color: var(--accent-color);
+}
+
+@media (max-width: 1024px) {
+    .clubs-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .club-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .members-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}

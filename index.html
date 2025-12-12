@@ -73,6 +73,7 @@
                 <a href="#ana"><i class="fas fa-home"></i> <span data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</span></a>
                 <a href="#oyun"><i class="fas fa-gamepad"></i> <span data-tr="Oyun İndir" data-en="Download Game">Oyun İndir</span></a>
                 <a href="#topluluk"><i class="fas fa-users"></i> <span data-tr="Topluluk" data-en="Community">Topluluk</span></a>
+                <a href="#kulupler"><i class="fas fa-shield-alt"></i> <span data-tr="Kulüpler" data-en="Clubs">Kulüpler</span></a>
             </nav>
             <div class="social-links">
                 <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
@@ -333,6 +334,57 @@
             </div>
         </div>
     </section>
+
+    <!-- Kulüpler Bölümü -->
+    <section id="kulupler" class="community-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-shield-alt"></i> <span data-tr="Kulüpler" data-en="Clubs">Kulüpler</span></h2>
+                <p data-tr="Kulüp oluştur, üye ol ve birlikte büyü!" data-en="Create clubs, join members, and grow together!">Kulüp oluştur, üye ol ve birlikte büyü!</p>
+            </div>
+
+            <div class="clubs-container">
+                <!-- Sol Taraf: Kulüp Listesi -->
+                <div class="clubs-list-container">
+                    <div class="clubs-header">
+                        <button class="btn btn-primary" onclick="openCreateClubModal()" id="createClubBtn">
+                            <i class="fas fa-plus"></i> <span data-tr="Kulüp Oluştur" data-en="Create Club">Kulüp Oluştur</span>
+                        </button>
+                        <input type="text" id="clubSearch" placeholder="Kulüp ara..." class="search-input" onkeyup="searchClubs()" data-placeholder-tr="Kulüp ara..." data-placeholder-en="Search clubs...">
+                    </div>
+                    <div id="clubsList" class="clubs-list"></div>
+                </div>
+
+                <!-- Sağ Taraf: Kulüp Detayı -->
+                <div class="club-detail-container" id="clubDetailContainer">
+                    <div style="text-align: center; padding: 4rem 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-shield-alt" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                        <p data-tr="Detayları görmek için bir kulüp seçin" data-en="Select a club to view details">Detayları görmek için bir kulüp seçin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kulüp Oluşturma Modal -->
+    <div id="createClubModal" class="modal" style="display: none;">
+        <div class="modal-content liquid-glass">
+            <span class="close" onclick="closeCreateClubModal()">&times;</span>
+            <h2><i class="fas fa-shield-alt"></i> <span data-tr="Yeni Kulüp Oluştur" data-en="Create New Club">Yeni Kulüp Oluştur</span></h2>
+            <div class="club-form">
+                <input type="text" id="clubName" placeholder="Kulüp Adı" class="input-field" maxlength="20" data-placeholder-tr="Kulüp Adı" data-placeholder-en="Club Name">
+                <textarea id="clubDescription" placeholder="Kulüp Açıklaması" class="textarea-field" maxlength="200" data-placeholder-tr="Kulüp Açıklaması" data-placeholder-en="Club Description"></textarea>
+                <input type="number" id="clubMaxMembers" placeholder="Maksimum Üye Sayısı" class="input-field" value="50" min="10" max="100" data-placeholder-tr="Maksimum Üye Sayısı" data-placeholder-en="Max Members">
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0;">
+                    <input type="checkbox" id="clubIsPrivate">
+                    <span data-tr="Özel Kulüp (Sadece davet ile)" data-en="Private Club (Invite only)">Özel Kulüp (Sadece davet ile)</span>
+                </label>
+                <button class="btn btn-primary" onclick="createClub()">
+                    <i class="fas fa-plus"></i> <span data-tr="Kulübü Oluştur" data-en="Create Club">Kulübü Oluştur</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>

@@ -3,9 +3,11 @@ let currentUser = null;
 const STORAGE_KEY = 'sced_user';
 const USERS_KEY = 'sced_users';
 const TOPICS_KEY = 'sced_topics';
+const CLUBS_KEY = 'sced_clubs';
 const LANG_KEY = 'sced_lang';
 const THEME_KEY = 'sced_theme';
 let currentLang = 'tr';
+let clubs = [];
 
 // Theme Toggle
 function toggleTheme() {
@@ -111,10 +113,57 @@ function initializeAdminAccount() {
     localStorage.setItem('sced_users', JSON.stringify(users));
 }
 
+// Kulüp Sistemi
+function initializeDefaultClubs() {
+    let clubs = JSON.parse(localStorage.getItem(CLUBS_KEY) || '[]');
+    
+    // Developers kulübü kontrol
+    const devClubExists = clubs.find(c => c.id === 1);
+    if (!devClubExists) {
+        const developersClub = {
+            id: 1,
+            name: 'Developers',
+            nameGradient: '#0032ff,#0065ff,#0098ff,#00cbff,#00ffff,#00ffcc,#00ff99,#00ff66,#00ff33,#00ff01',
+            description: 'Resmi Sced Developer Team kulübü. Sadece adminler üyedir.',
+            owner: 'SceDev',
+            admins: ['SceDev', 'nulldani'],
+            members: ['SceDev', 'nulldani'],
+            maxMembers: 50,
+            isPrivate: true,
+            createdAt: new Date().toISOString(),
+            stats: {
+                totalTopics: 0,
+                totalComments: 0,
+                totalLikes: 0
+            }
+        };
+        clubs.push(developersClub);
+        localStorage.setItem(CLUBS_KEY, JSON.stringify(clubs));
+        console.log('✅ Developers kulübü oluşturuldu');
+    }
+}
+
+// Kulüp yükle
+function loadClubs() {
+    const savedClubs = localStorage.getItem(CLUBS_KEY);
+    if (savedClubs) {
+        clubs = JSON.parse(savedClubs);
+    }
+    return clubs;
+}
+
+// Kulüp kaydet
+function saveClubs() {
+    localStorage.setItem(CLUBS_KEY, JSON.stringify(clubs));
+    console.log('💾 Kulüpler kaydedildi');
+}
+
 // Sayfa yüklendiğinde kullanıcıyı kontrol et
 window.addEventListener('DOMContentLoaded', function() {
     // Admin test hesabı oluştur (ilk yüklemede)
     initializeAdminAccount();
+    initializeDefaultClubs();
+    loadClubs();
     loadTheme();
     loadLanguage();
     loadUser();
@@ -1522,3 +1571,312 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ============ KULÜP SİSTEMİ ============
+
+// Kulüpleri render et
+function renderClubs() {
+    const clubsList = document.getElementById('clubsList');
+    if (!clubsList) return;
+    
+    if (clubs.length === 0) {
+        clubsList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Henüz kulüp yok. İlk kulübü sen oluştur!</p>';
+        return;
+    }
+    
+    clubsList.innerHTML = clubs.map(club => {
+        const memberCount = club.members ? club.members.length : 0;
+        const isMember = currentUser && club.members && club.members.includes(currentUser.username);
+        const isFull = memberCount >= club.maxMembers;
+        
+        // Kulüp ismi gradient
+        let clubNameHTML = club.name;
+        if (club.nameGradient) {
+            const colors = club.nameGradient.split(',');
+            const letters = club.name.split('');
+            clubNameHTML = letters.map((letter, i) => {
+                const color = colors[i % colors.length];
+                return `<span style="color: ${color}">${letter}</span>`;
+            }).join('');
+        }
+        
+        return `
+        <div class="club-card liquid-glass" onclick="showClubDetail(${club.id})">
+            <div class="club-header">
+                <h3>${clubNameHTML}</h3>
+                ${club.isPrivate ? '<span class="club-badge">🔒 Özel</span>' : ''}
+                ${club.id === 1 ? '<span class="club-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">👑 Resmi</span>' : ''}
+            </div>
+            <p class="club-description">${club.description}</p>
+            <div class="club-stats">
+                <span><i class="fas fa-users"></i> ${memberCount}/${club.maxMembers}</span>
+                <span><i class="fas fa-crown"></i> ${club.owner}</span>
+            </div>
+            ${isMember ? 
+                '<button class="btn btn-secondary" onclick="event.stopPropagation(); leaveClub(' + club.id + ')" style="width: 100%; margin-top: 1rem;">Ayrıl</button>' :
+                (isFull ? 
+                    '<button class="btn btn-secondary" disabled style="width: 100%; margin-top: 1rem; opacity: 0.5;">Dolu</button>' :
+                    '<button class="btn btn-primary" onclick="event.stopPropagation(); joinClub(' + club.id + ')" style="width: 100%; margin-top: 1rem;">Katıl</button>'
+                )
+            }
+        </div>
+        `;
+    }).join('');
+}
+
+// Kulüp detayını göster
+function showClubDetail(clubId) {
+    const club = clubs.find(c => c.id === clubId);
+    if (!club) return;
+    
+    const container = document.getElementById('clubDetailContainer');
+    const isMember = currentUser && club.members && club.members.includes(currentUser.username);
+    const isOwner = currentUser && club.owner === currentUser.username;
+    
+    // Kulüp ismi gradient
+    let clubNameHTML = club.name;
+    if (club.nameGradient) {
+        const colors = club.nameGradient.split(',');
+        const letters = club.name.split('');
+        clubNameHTML = letters.map((letter, i) => {
+            const color = colors[i % colors.length];
+            return `<span style="color: ${color}">${letter}</span>`;
+        }).join('');
+    }
+    
+    container.innerHTML = `
+        <div class="club-detail">
+            <div class="club-detail-header">
+                <h2>${clubNameHTML}</h2>
+                ${club.isPrivate ? '<span class="club-badge">🔒 Özel Kulüp</span>' : ''}
+                ${club.id === 1 ? '<span class="club-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">👑 Resmi Kulüp</span>' : ''}
+            </div>
+            
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">${club.description}</p>
+            
+            <div class="club-stats-grid">
+                <div class="stat-card liquid-glass">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-value">${club.members ? club.members.length : 0}/${club.maxMembers}</div>
+                    <div class="stat-label">Üye Sayısı</div>
+                </div>
+                <div class="stat-card liquid-glass">
+                    <i class="fas fa-comments"></i>
+                    <div class="stat-value">${club.stats ? club.stats.totalTopics : 0}</div>
+                    <div class="stat-label">Konu Sayısı</div>
+                </div>
+                <div class="stat-card liquid-glass">
+                    <i class="fas fa-heart"></i>
+                    <div class="stat-value">${club.stats ? club.stats.totalLikes : 0}</div>
+                    <div class="stat-label">Toplam Beğeni</div>
+                </div>
+            </div>
+            
+            <div class="club-members">
+                <h3><i class="fas fa-users"></i> Üyeler</h3>
+                <div class="members-grid">
+                    ${club.members && club.members.length > 0 ? 
+                        club.members.map(memberName => {
+                            const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+                            const member = users.find(u => u.username === memberName);
+                            const isAdmin = club.admins && club.admins.includes(memberName);
+                            const isOwner = club.owner === memberName;
+                            
+                            return `
+                            <div class="member-card liquid-glass" onclick="openUserProfile('${memberName}')">
+                                <img src="${member ? member.avatar : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + memberName}" alt="${memberName}">
+                                <div class="member-name">${memberName}</div>
+                                ${isOwner ? '<span class="member-role">👑 Kurucu</span>' : (isAdmin ? '<span class="member-role">⭐ Admin</span>' : '')}
+                            </div>
+                            `;
+                        }).join('') :
+                        '<p style="text-align: center; color: var(--text-secondary);">Henüz üye yok</p>'
+                    }
+                </div>
+            </div>
+            
+            ${isOwner ? `
+                <button class="btn btn-accent" onclick="deleteClub(${clubId})" style="width: 100%; margin-top: 2rem;">
+                    <i class="fas fa-trash"></i> Kulübü Sil
+                </button>
+            ` : ''}
+        </div>
+    `;
+}
+
+// Kulüp oluşturma modalını aç
+function openCreateClubModal() {
+    if (!currentUser) {
+        alert(translations[currentLang].loginRequired);
+        openLoginModal();
+        return;
+    }
+    document.getElementById('createClubModal').style.display = 'block';
+}
+
+// Kulüp oluşturma modalını kapat
+function closeCreateClubModal() {
+    document.getElementById('createClubModal').style.display = 'none';
+}
+
+// Kulüp oluştur
+function createClub() {
+    if (!currentUser) {
+        alert(translations[currentLang].loginRequired);
+        return;
+    }
+    
+    const name = document.getElementById('clubName').value.trim();
+    const description = document.getElementById('clubDescription').value.trim();
+    const maxMembers = parseInt(document.getElementById('clubMaxMembers').value);
+    const isPrivate = document.getElementById('clubIsPrivate').checked;
+    
+    if (!name) {
+        alert(currentLang === 'tr' ? 'Lütfen kulüp adı girin!' : 'Please enter club name!');
+        return;
+    }
+    
+    if (!description) {
+        alert(currentLang === 'tr' ? 'Lütfen kulüp açıklaması girin!' : 'Please enter club description!');
+        return;
+    }
+    
+    const newClub = {
+        id: Date.now(),
+        name: name,
+        description: description,
+        owner: currentUser.username,
+        admins: [currentUser.username],
+        members: [currentUser.username],
+        maxMembers: maxMembers,
+        isPrivate: isPrivate,
+        createdAt: new Date().toISOString(),
+        stats: {
+            totalTopics: 0,
+            totalComments: 0,
+            totalLikes: 0
+        }
+    };
+    
+    clubs.push(newClub);
+    saveClubs();
+    renderClubs();
+    closeCreateClubModal();
+    showNotification(currentLang === 'tr' ? '✅ Kulüp oluşturuldu!' : '✅ Club created!');
+    
+    // Formu temizle
+    document.getElementById('clubName').value = '';
+    document.getElementById('clubDescription').value = '';
+    document.getElementById('clubMaxMembers').value = 50;
+    document.getElementById('clubIsPrivate').checked = false;
+}
+
+// Kulübe katıl
+function joinClub(clubId) {
+    if (!currentUser) {
+        alert(translations[currentLang].loginRequired);
+        openLoginModal();
+        return;
+    }
+    
+    const club = clubs.find(c => c.id === clubId);
+    if (!club) return;
+    
+    if (club.members.length >= club.maxMembers) {
+        showNotification(currentLang === 'tr' ? '⚠️ Kulüp dolu!' : '⚠️ Club is full!');
+        return;
+    }
+    
+    if (club.members.includes(currentUser.username)) {
+        showNotification(currentLang === 'tr' ? '⚠️ Zaten üyesiniz!' : '⚠️ Already a member!');
+        return;
+    }
+    
+    club.members.push(currentUser.username);
+    saveClubs();
+    renderClubs();
+    showClubDetail(clubId);
+    showNotification(currentLang === 'tr' ? '✅ Kulübe katıldınız!' : '✅ Joined club!');
+}
+
+// Kulüpten ayrıl
+function leaveClub(clubId) {
+    if (!currentUser) return;
+    
+    const club = clubs.find(c => c.id === clubId);
+    if (!club) return;
+    
+    if (club.owner === currentUser.username) {
+        showNotification(currentLang === 'tr' ? '⚠️ Kurucu kulüpten ayrılamaz!' : '⚠️ Owner cannot leave!');
+        return;
+    }
+    
+    club.members = club.members.filter(m => m !== currentUser.username);
+    club.admins = club.admins.filter(a => a !== currentUser.username);
+    saveClubs();
+    renderClubs();
+    showNotification(currentLang === 'tr' ? '👋 Kulüpten ayrıldınız' : '👋 Left club');
+}
+
+// Kulübü sil
+function deleteClub(clubId) {
+    const club = clubs.find(c => c.id === clubId);
+    if (!club || club.owner !== currentUser.username) return;
+    
+    if (club.id === 1) {
+        showNotification(currentLang === 'tr' ? '⚠️ Resmi kulüp silinemez!' : '⚠️ Official club cannot be deleted!');
+        return;
+    }
+    
+    const confirmed = confirm(currentLang === 'tr' ? 
+        'Kulübü silmek istediğinize emin misiniz?' : 
+        'Are you sure you want to delete the club?');
+    
+    if (!confirmed) return;
+    
+    clubs = clubs.filter(c => c.id !== clubId);
+    saveClubs();
+    renderClubs();
+    document.getElementById('clubDetailContainer').innerHTML = `
+        <div style="text-align: center; padding: 4rem 2rem; color: var(--text-secondary);">
+            <i class="fas fa-shield-alt" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+            <p>Detayları görmek için bir kulüp seçin</p>
+        </div>
+    `;
+    showNotification(currentLang === 'tr' ? '✅ Kulüp silindi!' : '✅ Club deleted!');
+}
+
+// Kulüp ara
+function searchClubs() {
+    const searchTerm = document.getElementById('clubSearch').value.toLowerCase();
+    const filteredClubs = clubs.filter(club => 
+        club.name.toLowerCase().includes(searchTerm) || 
+        club.description.toLowerCase().includes(searchTerm)
+    );
+    
+    const clubsList = document.getElementById('clubsList');
+    if (filteredClubs.length === 0) {
+        clubsList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Sonuç bulunamadı</p>';
+        return;
+    }
+    
+    // Render filtered clubs (simplified version)
+    const tempClubs = clubs;
+    clubs = filteredClubs;
+    renderClubs();
+    clubs = tempClubs;
+}
+
+// Sayfa açıldığında kulüpleri göster
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.hash === '#kulupler') {
+        renderClubs();
+    }
+});
+
+// Hash değiştiğinde kulüpleri yükle
+window.addEventListener('hashchange', () => {
+    if (window.location.hash === '#kulupler') {
+        renderClubs();
+    }
+});
