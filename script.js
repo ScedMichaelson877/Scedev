@@ -1,6 +1,8 @@
 // Kullanıcı sistemi
 let currentUser = null;
 const STORAGE_KEY = 'sced_user';
+const USERS_KEY = 'sced_users';
+const TOPICS_KEY = 'sced_topics';
 const LANG_KEY = 'sced_lang';
 let currentLang = 'tr';
 
