@@ -4,7 +4,34 @@ const STORAGE_KEY = 'sced_user';
 const USERS_KEY = 'sced_users';
 const TOPICS_KEY = 'sced_topics';
 const LANG_KEY = 'sced_lang';
+const THEME_KEY = 'sced_theme';
 let currentLang = 'tr';
+
+// Theme Toggle
+function toggleTheme() {
+    const body = document.body;
+    const themeIcon = document.querySelector('#themeToggle i');
+    
+    body.classList.toggle('light-mode');
+    const isLight = body.classList.contains('light-mode');
+    
+    // Icon değiştir
+    themeIcon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+    
+    // LocalStorage'a kaydet
+    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+}
+
+// Sayfa yüklenince tema yükle
+function loadTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    const themeIcon = document.querySelector('#themeToggle i');
+    
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        if (themeIcon) themeIcon.className = 'fas fa-sun';
+    }
+}
 
 // Avatar seçenekleri
 const avatarSeeds = ['ali', 'ayse', 'mehmet', 'zeynep', 'ahmet', 'fatma', 'can', 'elif', 'murat', 'selin', 'burak', 'deniz'];
@@ -45,9 +72,8 @@ const translations = {
 function initializeAdminAccount() {
     const users = JSON.parse(localStorage.getItem('sced_users') || '[]');
     
-    // Admin hesabı zaten var mı kontrol et (email ile)
+    // SceDev admin hesabı kontrol
     const adminExists = users.find(u => u.email === 'admin@scedev.com');
-    
     if (!adminExists) {
         const adminAccount = {
             username: 'SceDev',
@@ -60,23 +86,37 @@ function initializeAdminAccount() {
             role: 'admin',
             joinDate: new Date().toISOString()
         };
-        
         users.push(adminAccount);
-        localStorage.setItem('sced_users', JSON.stringify(users));
-        console.log('✅ Admin hesabı oluşturuldu');
-        console.log('📧 Email:', adminAccount.email);
-        console.log('👤 Username:', adminAccount.username);
-        console.log('🔑 Password:', adminAccount.password);
-    } else {
-        console.log('ℹ️ Admin hesabı zaten var');
-        console.log('Admin bilgileri:', adminExists);
+        console.log('✅ SceDev admin hesabı oluşturuldu');
     }
+    
+    // nulldani admin hesabı kontrol
+    const nulldaniExists = users.find(u => u.email === 'nulldani@scedev.com');
+    if (!nulldaniExists) {
+        const nulldaniAccount = {
+            username: 'nulldani',
+            email: 'nulldani@scedev.com',
+            password: '5411',
+            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=nulldani',
+            themeColor: '#c3f00ff',
+            nameColor: 'nulldani-gradient',
+            bio: 'Sced Developer Team Co-Admin',
+            role: 'admin',
+            joinDate: new Date().toISOString()
+        };
+        users.push(nulldaniAccount);
+        console.log('✅ nulldani admin hesabı oluşturuldu');
+    }
+    
+    localStorage.setItem('sced_users', JSON.stringify(users));
+}
 }
 
 // Sayfa yüklendiğinde kullanıcıyı kontrol et
 window.addEventListener('DOMContentLoaded', function() {
     // Admin test hesabı oluştur (ilk yüklemede)
     initializeAdminAccount();
+    loadTheme();
     loadLanguage();
     loadUser();
     generateAvatars();
@@ -901,7 +941,11 @@ function renderTopicsToDOM() {
 // Username HTML'i oluştur (rainbow veya renkli)
 function getUsernameHTML(username, role, nameColor, clickable = false) {
     if (role === 'admin') {
-        // Admin için rainbow gradient
+        // nulldani için özel gradient
+        if (nameColor === 'nulldani-gradient') {
+            return `<span class="username-nulldani-gradient">${username}</span>`;
+        }
+        // Diğer adminler için rainbow gradient
         return `<span class="username-rainbow">${username}</span>`;
     } else {
         // Normal kullanıcı için seçilmiş renk
@@ -1015,6 +1059,71 @@ function openUserProfile(username) {
 // Kullanıcı profilini kapat
 function closeUserProfile() {
     document.getElementById('userProfileModal').style.display = 'none';
+}
+
+// Geliştiriciden Son Haberler - Admin postlarını göster
+function showDevNews() {
+    const adminTopics = topics.filter(t => t.userRole === 'admin');
+    
+    if (adminTopics.length === 0) {
+        showNotification(currentLang === 'tr' ? 'Henüz geliştirici haberi yok!' : 'No developer news yet!');
+        return;
+    }
+    
+    // Forum sekmesine git ve sadece admin konularını göster
+    document.querySelector('a[href="#topluluk"]').click();
+    
+    setTimeout(() => {
+        const topicsList = document.getElementById('topicsList');
+        topicsList.innerHTML = `
+            <div style="margin-bottom: 2rem; padding: 1rem; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; color: white;">
+                <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-bullhorn"></i>
+                    ${currentLang === 'tr' ? 'Geliştiriciden Son Haberler' : 'Developer News'}
+                </h3>
+                <p style="font-size: 0.9rem; opacity: 0.9;">
+                    ${currentLang === 'tr' ? 'Admin hesaplarından yapılan tüm duyurular' : 'All announcements from admin accounts'}
+                </p>
+                <button class="btn" onclick="renderTopics()" style="margin-top: 1rem; background: white; color: #d97706;">
+                    <i class="fas fa-arrow-left"></i> ${currentLang === 'tr' ? 'Tüm Konulara Dön' : 'Back to All Topics'}
+                </button>
+            </div>
+        ` + adminTopics.map(topic => {
+            const isLiked = currentUser && topic.likedBy && topic.likedBy.includes(currentUser.username);
+            const commentCount = topic.comments ? topic.comments.length : 0;
+            const usernameHTML = getUsernameHTML(topic.userName, topic.userRole, topic.nameColor);
+            
+            const deleteBtn = currentUser && currentUser.role === 'admin' ? 
+                `<button class="delete-topic-btn" onclick="event.stopPropagation(); deleteTopic(${topic.id})" title="${currentLang === 'tr' ? 'Konuyu Sil' : 'Delete Topic'}">
+                    <i class="fas fa-trash"></i>
+                </button>` : '';
+            
+            return `
+            <div class="topic-card" onclick="openTopicDetail(${topic.id})" style="border-left: 3px solid #f59e0b;">
+                ${deleteBtn}
+                <div class="topic-header">
+                    <img src="${topic.avatar}" alt="${topic.userName}" class="topic-avatar" onclick="event.stopPropagation(); openUserProfile(&quot;${topic.userName}&quot;)" style="cursor: pointer;" title="${currentLang === 'tr' ? 'Profili Gör' : 'View Profile'}">
+                    <div class="topic-meta">
+                        <h4 class="${topic.userRole === 'admin' ? 'admin-badge' : ''}" onclick="event.stopPropagation(); openUserProfile(&quot;${topic.userName}&quot;)" style="cursor: pointer;" title="${currentLang === 'tr' ? 'Profili Gör' : 'View Profile'}">${usernameHTML}</h4>
+                        <p>${topic.time}</p>
+                    </div>
+                </div>
+                <h3 class="topic-title">${topic.title}</h3>
+                <p class="topic-content">${topic.content}</p>
+                <div class="topic-actions" onclick="event.stopPropagation()">
+                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${topic.id})">
+                        <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
+                        <span class="action-count">${topic.likes}</span>
+                    </button>
+                    <button class="action-btn" onclick="openTopicDetail(${topic.id})">
+                        <i class="far fa-comment"></i>
+                        <span class="action-count">${commentCount}</span>
+                    </button>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }, 300);
 }
 
 // Beğeni toggle
