@@ -9,6 +9,39 @@ const THEME_KEY = 'sced_theme';
 let currentLang = 'tr';
 let clubs = [];
 
+// ============ PERFORMANCE UTILITIES ============
+
+// Debounce - Aynı fonksiyonun çok sık çağrılmasını önler
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Throttle - Fonksiyonu belirli aralıklarla çalıştırır
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+// Render cache
+let topicsCache = '';
+let clubsCache = '';
+const ITEMS_PER_PAGE = 20;
+let currentTopicPage = 1;
+
 // Theme Toggle
 function toggleTheme() {
     const body = document.body;
@@ -89,7 +122,6 @@ function initializeAdminAccount() {
             joinDate: new Date().toISOString()
         };
         users.push(adminAccount);
-        console.log('✅ SceDev admin hesabı oluşturuldu');
     }
     
     // nulldani admin hesabı kontrol
@@ -107,7 +139,6 @@ function initializeAdminAccount() {
             joinDate: new Date().toISOString()
         };
         users.push(nulldaniAccount);
-        console.log('✅ nulldani admin hesabı oluşturuldu');
     }
     
     localStorage.setItem('sced_users', JSON.stringify(users));
@@ -766,9 +797,16 @@ function loadTopics() {
     // Firebase kullanılıyorsa real-time dinle (sadece bir kez)
     if (useFirebase && database && !firebaseListenerAdded) {
         firebaseListenerAdded = true;
-        console.log('👂 Firebase listener ekleniyor...');
+        
+        // Firebase listener'ı throttle ile optimize et
+        const throttledRender = throttle(() => {
+            const topicsList = document.getElementById('topicsList');
+            if (topicsList) {
+                renderTopicsToDOM();
+            }
+        }, 500); // 500ms'de bir render
+        
         database.ref('topics').on('value', (snapshot) => {
-            console.log('🔔 Firebase\'den veri geldi!');
             const firebaseTopics = snapshot.val();
             if (firebaseTopics) {
                 topics = Object.values(firebaseTopics);
@@ -779,19 +817,16 @@ function loadTopics() {
                     if (!topic.comments) topic.comments = [];
                 });
                 
-                console.log('✅ Firebase\'den yüklendi, toplam konu:', topics.length);
-                // localStorage'a da kaydet
-                localStorage.setItem(TOPICS_KEY, JSON.stringify(topics));
-                // Sadece DOM güncellemesi yap, loadTopics'i tekrar çağırma
-                const topicsList = document.getElementById('topicsList');
-                if (topicsList) {
-                    renderTopicsToDOM();
-                }
-            } else {
-                console.log('⚠️ Firebase\'de hiç konu yok (snapshot.val() boş)');
+                // localStorage'a da kaydet (background)
+                requestIdleCallback(() => {
+                    localStorage.setItem(TOPICS_KEY, JSON.stringify(topics));
+                });
+                
+                // Throttled render
+                throttledRender();
             }
         }, (error) => {
-            console.error('❌ Firebase listener hatası:', error.code, error.message);
+            console.error('❌ Firebase:', error.code);
         });
     }
     
@@ -934,7 +969,6 @@ function renderTopics() {
 
 // Konuları DOM'a render et (iç fonksiyon)
 function renderTopicsToDOM() {
-    console.log('Konular render ediliyor:', topics.length + ' konu');
     const topicsList = document.getElementById('topicsList');
     
     if (topics.length === 0) {
@@ -942,7 +976,12 @@ function renderTopicsToDOM() {
         return;
     }
     
-    topicsList.innerHTML = topics.map(topic => {
+    // Lazy loading - sadece görünen sayfadaki konuları render et
+    const startIndex = (currentTopicPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const visibleTopics = topics.slice(startIndex, endIndex);
+    
+    const newHTML = visibleTopics.map(topic => {
         // likedBy ve comments dizilerini garanti et
         if (!topic.likedBy) topic.likedBy = [];
         if (!topic.comments) topic.comments = [];
@@ -960,23 +999,23 @@ function renderTopicsToDOM() {
             </button>` : '';
         
         return `
-        <div class="topic-card" onclick="openTopicDetail(${topic.id})">
+        <div class="topic-card" data-topic-id="${topic.id}" data-username="${topic.userName}">
             ${deleteBtn}
             <div class="topic-header">
-                <img src="${topic.avatar}" alt="${topic.userName}" class="topic-avatar" onclick="event.stopPropagation(); openUserProfile(&quot;${topic.userName}&quot;)" style="cursor: pointer;" title="${currentLang === 'tr' ? 'Profili Gör' : 'View Profile'}">
+                <img src="${topic.avatar}" alt="${topic.userName}" class="topic-avatar" loading="lazy" decoding="async" style="cursor: pointer;" title="${currentLang === 'tr' ? 'Profili Gör' : 'View Profile'}">
                 <div class="topic-meta">
-                    <h4 class="${topic.userRole === 'admin' ? 'admin-badge' : ''}" onclick="event.stopPropagation(); openUserProfile(&quot;${topic.userName}&quot;)" style="cursor: pointer;" title="${currentLang === 'tr' ? 'Profili Gör' : 'View Profile'}">${usernameHTML}</h4>
+                    <h4 class="${topic.userRole === 'admin' ? 'admin-badge' : ''}" style="cursor: pointer;" title="${currentLang === 'tr' ? 'Profili Gör' : 'View Profile'}">${usernameHTML}</h4>
                     <p>${topic.time}</p>
                 </div>
             </div>
             <h3 class="topic-title">${topic.title}</h3>
             <p class="topic-content">${topic.content}</p>
-            <div class="topic-actions" onclick="event.stopPropagation()">
-                <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${topic.id})">
+            <div class="topic-actions">
+                <button class="action-btn like-btn ${isLiked ? 'liked' : ''}">
                     <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
                     <span class="action-count">${topic.likes}</span>
                 </button>
-                <button class="action-btn" onclick="openTopicDetail(${topic.id})">
+                <button class="action-btn">
                     <i class="far fa-comment"></i>
                     <span class="action-count">${commentCount}</span>
                 </button>
@@ -984,6 +1023,32 @@ function renderTopicsToDOM() {
         </div>
         `;
     }).join('');
+    
+    // Cache kontrolü - aynı içerik varsa render'ı atla
+    if (newHTML === topicsCache) return;
+    topicsCache = newHTML;
+    
+    topicsList.innerHTML = newHTML;
+    
+    // Pagination butonları
+    const totalPages = Math.ceil(topics.length / ITEMS_PER_PAGE);
+    if (totalPages > 1) {
+        const paginationHTML = `
+            <div class="pagination" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
+                ${currentTopicPage > 1 ? `<button class="btn btn-secondary" onclick="changePage(${currentTopicPage - 1})">◀ Önceki</button>` : ''}
+                <span style="display: flex; align-items: center; color: var(--text-primary);">Sayfa ${currentTopicPage} / ${totalPages}</span>
+                ${currentTopicPage < totalPages ? `<button class="btn btn-secondary" onclick="changePage(${currentTopicPage + 1})">Sonraki ▶</button>` : ''}
+            </div>
+        `;
+        topicsList.innerHTML += paginationHTML;
+    }
+}
+
+// Sayfa değiştir
+function changePage(page) {
+    currentTopicPage = page;
+    renderTopicsToDOM();
+    document.querySelector('#forum').scrollIntoView({ behavior: 'smooth' });
 }
 
 // Username HTML'i oluştur (rainbow veya renkli)
@@ -1584,7 +1649,7 @@ function renderClubs() {
         return;
     }
     
-    clubsList.innerHTML = clubs.map(club => {
+    const newHTML = clubs.map(club => {
         const memberCount = club.members ? club.members.length : 0;
         const isMember = currentUser && club.members && club.members.includes(currentUser.username);
         const isFull = memberCount >= club.maxMembers;
@@ -1601,7 +1666,7 @@ function renderClubs() {
         }
         
         return `
-        <div class="club-card liquid-glass" onclick="showClubDetail(${club.id})">
+        <div class="club-card liquid-glass" data-club-id="${club.id}">
             <div class="club-header">
                 <h3>${clubNameHTML}</h3>
                 ${club.isPrivate ? '<span class="club-badge">🔒 Özel</span>' : ''}
@@ -1613,15 +1678,21 @@ function renderClubs() {
                 <span><i class="fas fa-crown"></i> ${club.owner}</span>
             </div>
             ${isMember ? 
-                '<button class="btn btn-secondary" onclick="event.stopPropagation(); leaveClub(' + club.id + ')" style="width: 100%; margin-top: 1rem;">Ayrıl</button>' :
+                '<button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Ayrıl</button>' :
                 (isFull ? 
                     '<button class="btn btn-secondary" disabled style="width: 100%; margin-top: 1rem; opacity: 0.5;">Dolu</button>' :
-                    '<button class="btn btn-primary" onclick="event.stopPropagation(); joinClub(' + club.id + ')" style="width: 100%; margin-top: 1rem;">Katıl</button>'
+                    '<button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Katıl</button>'
                 )
             }
         </div>
         `;
     }).join('');
+    
+    // Cache kontrolü
+    if (newHTML === clubsCache) return;
+    clubsCache = newHTML;
+    
+    clubsList.innerHTML = newHTML;
 }
 
 // Kulüp detayını göster
@@ -1846,26 +1917,33 @@ function deleteClub(clubId) {
     showNotification(currentLang === 'tr' ? '✅ Kulüp silindi!' : '✅ Club deleted!');
 }
 
-// Kulüp ara
-function searchClubs() {
+// Kulüp ara (debounced)
+const searchClubs = debounce(function() {
     const searchTerm = document.getElementById('clubSearch').value.toLowerCase();
+    
+    if (!searchTerm) {
+        renderClubs();
+        return;
+    }
+    
+    const clubsList = document.getElementById('clubsList');
     const filteredClubs = clubs.filter(club => 
         club.name.toLowerCase().includes(searchTerm) || 
         club.description.toLowerCase().includes(searchTerm)
     );
     
-    const clubsList = document.getElementById('clubsList');
     if (filteredClubs.length === 0) {
         clubsList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Sonuç bulunamadı</p>';
         return;
     }
     
-    // Render filtered clubs (simplified version)
+    // Render filtered clubs
     const tempClubs = clubs;
     clubs = filteredClubs;
+    clubsCache = ''; // Cache'i sıfırla
     renderClubs();
     clubs = tempClubs;
-}
+}, 300);
 
 // Sayfa açıldığında kulüpleri göster
 document.addEventListener('DOMContentLoaded', () => {
@@ -1878,5 +1956,85 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('hashchange', () => {
     if (window.location.hash === '#kulupler') {
         renderClubs();
+    }
+});
+
+// ============ EVENT DELEGATION SİSTEMİ ============
+// Binlerce onclick yerine tek bir event listener
+
+// Topics list için event delegation
+document.addEventListener('DOMContentLoaded', () => {
+    const topicsList = document.getElementById('topicsList');
+    if (topicsList) {
+        topicsList.addEventListener('click', (e) => {
+            // Silme butonu
+            if (e.target.closest('.delete-topic-btn')) {
+                e.stopPropagation();
+                const topicCard = e.target.closest('.topic-card');
+                if (topicCard) {
+                    const topicId = parseInt(topicCard.dataset.topicId);
+                    if (!isNaN(topicId)) deleteTopic(topicId);
+                }
+                return;
+            }
+            
+            // Profil görüntüleme (avatar veya username)
+            if (e.target.closest('.topic-avatar') || e.target.closest('.topic-meta h4')) {
+                e.stopPropagation();
+                const topicCard = e.target.closest('.topic-card');
+                if (topicCard) {
+                    const username = topicCard.dataset.username;
+                    if (username) openUserProfile(username);
+                }
+                return;
+            }
+            
+            // Like butonu
+            if (e.target.closest('.action-btn.like-btn')) {
+                e.stopPropagation();
+                const topicCard = e.target.closest('.topic-card');
+                if (topicCard) {
+                    const topicId = parseInt(topicCard.dataset.topicId);
+                    if (!isNaN(topicId)) toggleLike(topicId);
+                }
+                return;
+            }
+            
+            // Konu kartına tıklama
+            const topicCard = e.target.closest('.topic-card');
+            if (topicCard) {
+                const topicId = parseInt(topicCard.dataset.topicId);
+                if (!isNaN(topicId)) openTopicDetail(topicId);
+            }
+        });
+    }
+    
+    // Clubs list için event delegation
+    const clubsList = document.getElementById('clubsList');
+    if (clubsList) {
+        clubsList.addEventListener('click', (e) => {
+            // Join/Leave butonları
+            if (e.target.closest('.btn')) {
+                e.stopPropagation();
+                const clubCard = e.target.closest('.club-card');
+                if (clubCard) {
+                    const clubId = parseInt(clubCard.dataset.clubId);
+                    const btn = e.target.closest('.btn');
+                    if (btn.textContent.includes('Katıl')) {
+                        joinClub(clubId);
+                    } else if (btn.textContent.includes('Ayrıl')) {
+                        leaveClub(clubId);
+                    }
+                }
+                return;
+            }
+            
+            // Kulüp kartına tıklama
+            const clubCard = e.target.closest('.club-card');
+            if (clubCard) {
+                const clubId = parseInt(clubCard.dataset.clubId);
+                if (!isNaN(clubId)) showClubDetail(clubId);
+            }
+        });
     }
 });
